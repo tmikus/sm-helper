@@ -1,6 +1,6 @@
 {
   "name": "sm-helper",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -18,5 +18,8 @@
   "homepage": "https://github.com/tmikus/sm-helper#readme",
   "dependencies": {
     "copy-paste": "^1.1.4"
+  },
+  "bin": {
+    "sm-helper": "index.js"
   }
 }
