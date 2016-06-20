@@ -22,7 +22,7 @@ function getServiceName(services)
 	}
 	else
 	{
-        var cwdPath = __dirname.split(path.sep);
+        var cwdPath = process.cwd().split(path.sep);
         expectedServiceName = cwdPath[cwdPath.length - 1].toUpperCase().replace(/\-/g, "_");
 	}
 
