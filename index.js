@@ -1,36 +1,40 @@
 #!/usr/bin/env node
 
-if (process.argv.length < 3)
+if (["-h", "--help", "?"].indexOf(process.argv[2]) !== -1)
 {
-	console.log("usage: get-latest-activator.js service_name [debug_port]");
+	console.log("usage: sm-helper [service_name] [debug_port]");
 	console.log("options:");
-	console.log("  service_name: Name of the service for which you want activator parameters.");
-	console.log("  [debug_port]: Port number on which we want debugging to be enabled.")
+	console.log("  [service_name]: Name of the service for which you want activator parameters.");
+    console.log("                  By default it will take name of current directory.");
+	console.log("  [debug_port]: Port number on which we want debugging to be enabled.");
 	console.log("                By default debugging is disabled.");
 	return;
 }
 
 function getServiceName(services)
 {
-	var name = "CATO_FRONTEND";
+	var name = null;
+    var expectedServiceName = null;
 
 	if (process.argv.length >= 3)
 	{
-		var inputName = process.argv[2];
-		if (services.hasOwnProperty(inputName))
-		{
-			console.log("Using service name: ", inputName);
-			name = inputName;
-		}
-		else
-		{
-			console.log("Invalid service name: ", inputName, ". Using default: ", name);
-		}
+		expectedServiceName = process.argv[2];
 	}
 	else
 	{
-		console.log("No service name specified. Using default: ", name);
+        var cwdPath = __dirname.split(path.sep);
+        expectedServiceName = cwdPath[cwdPath.length - 1].toUpperCase().replace(/\-/g, "_");
 	}
+
+    if (services.hasOwnProperty(expectedServiceName))
+    {
+        console.log("Using service name: ", expectedServiceName);
+        name = expectedServiceName;
+    }
+    else
+    {
+        console.log("Invalid service name: ", expectedServiceName);
+    }
 
 	return name;
 }
@@ -43,27 +47,30 @@ var servicesPath = path.join(process.env.WORKSPACE, "service-manager-config/serv
 console.log("\n" + servicesPath);
 
 var services = JSON.parse(fs.readFileSync(servicesPath, "utf8"));
-var command = "activator";
 
 var serviceName = getServiceName(services);
-var catoConfig = services[serviceName].binary.cmd;
-
-for (var index = 0; index < catoConfig.length; index++)
+if (serviceName !== null)
 {
-	var param = catoConfig[index];
-	if (param.indexOf("-Dapplication") == -1 && param.indexOf("-Dfeature") == -1)
-		continue;
+    var command = "activator";
+    var catoConfig = services[serviceName].binary.cmd;
 
-	command += " " + param;
+    for (var index = 0; index < catoConfig.length; index++)
+    {
+        var param = catoConfig[index];
+        if (param.indexOf("-Dapplication") == -1 && param.indexOf("-Dfeature") == -1)
+            continue;
+
+        command += " " + param;
+    }
+
+    if (process.argv.length >= 4)
+    {
+        command += " -jvm-debug " + process.argv[3];
+    }
+
+    console.log(command);
+    clipboard.copy(command, function ()
+    {
+        console.log("Script copied to clipboard.\n");
+    });
 }
-
-if (process.argv.length >= 4)
-{
-	command += " -jvm-debug " + process.argv[3];
-}
-
-console.log(command);
-clipboard.copy(command, function ()
-{
-	console.log("Script copied to clipboard.\n");
-});
