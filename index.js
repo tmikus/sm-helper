@@ -63,6 +63,8 @@ if (serviceName !== null)
         command += " " + param;
     }
 
+    command += " --http.port=" + services[serviceName].defaultPort;
+
     if (process.argv.length >= 4)
     {
         command += " -jvm-debug " + process.argv[3];
