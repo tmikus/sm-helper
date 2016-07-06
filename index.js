@@ -63,7 +63,7 @@ if (serviceName !== null)
         command += " " + param;
     }
 
-    command += " --http.port=" + services[serviceName].defaultPort;
+    command += " -Dhttp.port=" + services[serviceName].defaultPort;
 
     if (process.argv.length >= 4)
     {
