@@ -52,6 +52,11 @@ var serviceName = getServiceName(services);
 if (serviceName !== null)
 {
     var command = "activator";
+    if (/^win/.test(process.platform))
+    {
+        command += " --%";
+    }
+
     var catoConfig = services[serviceName].binary.cmd;
 
     for (var index = 0; index < catoConfig.length; index++)
