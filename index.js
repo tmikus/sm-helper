@@ -51,7 +51,7 @@ var services = JSON.parse(fs.readFileSync(servicesPath, "utf8"));
 var serviceName = getServiceName(services);
 if (serviceName !== null)
 {
-    var command = "activator";
+    var command = "sm --stop " + serviceName + "\nactivator";
     if (/^win/.test(process.platform))
     {
         command += " --%";
@@ -74,6 +74,8 @@ if (serviceName !== null)
     {
         command += " -jvm-debug " + process.argv[3];
     }
+
+    command += "\nrun\n";
 
     console.log(command);
     clipboard.copy(command, function ()
